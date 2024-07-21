@@ -1,0 +1,19 @@
+# HPRERA Project Scraper
+
+This Python script scrapes the first 6 registered projects from the HPRERA website and extracts the following details:
+- GSTIN No
+- PAN No
+- Name
+- Permanent Address
+
+## Requirements
+
+Install the required Python packages using pip:
+
+pip install requests beautifulsoup4 pandas
+
+
+### Important Notes
+- Ensure you handle errors and exceptions properly in your code, especially when dealing with network requests.
+
+-Save your script in a file, for example, scrape_hprera_projects.py.
