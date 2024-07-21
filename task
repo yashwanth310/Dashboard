@@ -1,0 +1,56 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+# URL of the site to scrape
+url = "https://hprera.nic.in/PublicDashboard"
+
+# Send a GET request to the website
+response = requests.get(url)
+response.raise_for_status()  # Check if the request was successful
+
+# Parse the HTML content using BeautifulSoup
+soup = BeautifulSoup(response.content, "html.parser")
+
+# Find the section containing registered projects
+registered_projects = soup.find_all("div", class_="panel panel-default")
+
+project_details = []
+
+for project in registered_projects[:6]:
+    # Find the RERA number link to navigate to the detail page
+    rera_link = project.find("a", href=True)
+    detail_url = "https://hprera.nic.in" + rera_link['href']
+    
+    # Request the detail page
+    detail_response = requests.get(detail_url)
+    detail_response.raise_for_status()
+    
+    # Parse the detail page
+    detail_soup = BeautifulSoup(detail_response.content, "html.parser")
+    
+    # Extract required information
+    gstin = detail_soup.find("span", id="ctl00_ContentPlaceHolder1_lblGSTIN").text.strip()
+    pan = detail_soup.find("span", id="ctl00_ContentPlaceHolder1_lblPAN").text.strip()
+    name = detail_soup.find("span", id="ctl00_ContentPlaceHolder1_lblPromoterName").text.strip()
+    address = detail_soup.find("span", id="ctl00_ContentPlaceHolder1_lblPermanentAddress").text.strip()
+    
+    project_details.append({
+        "GSTIN No": gstin,
+        "PAN No": pan,
+        "Name": name,
+        "Permanent Address": address
+    })
+
+# Convert the project details to a DataFrame for better presentation
+df = pd.DataFrame(project_details)
+
+# Save the DataFrame to a CSV file (optional)
+df.to_csv("registered_projects.csv", index=False)
+
+print(df)
+
+
+
+packages must be installed for this program
+//pip install requests beautifulsoup4 pandas//
